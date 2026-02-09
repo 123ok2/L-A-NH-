@@ -1,0 +1,7 @@
+{
+  "name": "Lửa Nhỏ - Cộng Đồng Sống Chất",
+  "description": "Một mạng xã hội chia sẻ mẹo vặt, cảm hứng học tập và kỹ năng sống dành cho giới trẻ với phong cách gần gũi, không dạy đời.",
+  "requestFramePermissions": [
+    "camera"
+  ]
+}
