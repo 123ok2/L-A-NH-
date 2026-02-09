@@ -27,7 +27,9 @@ import {
   Lightbulb,
   Sparkle,
   Layers,
-  Settings2
+  Settings2,
+  Clock,
+  TrendingUp
 } from 'lucide-react';
 import { Post, Comment, DEFAULT_CATEGORIES, LeaderboardUser, UserProfileData } from './types';
 import { 
@@ -448,13 +450,30 @@ function App() {
                      <CreatePostBox user={user} isAdmin={isAdmin} />
                   </div>
                   
-                  <div className="flex items-center justify-between gap-2 mb-6 px-2">
+                  <div className="flex items-center justify-between gap-2 mb-8 px-2">
                     <div className="flex items-center gap-3">
                        <h2 className="text-xl font-bold tracking-tight text-slate-900">
                          {searchQuery ? `Kết quả: "${searchQuery}"` : (activeCategory === 'All' ? 'Đang lan tỏa' : activeCategory)}
                        </h2>
                        <div className="h-0.5 w-8 bg-orange-500 rounded-full"></div>
                     </div>
+
+                    {!searchQuery && (
+                      <div className="segmented-control flex items-center p-1 bg-slate-100 rounded-2xl">
+                         <button 
+                            onClick={() => setSortBy('latest')} 
+                            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${sortBy === 'latest' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                         >
+                            <Clock size={14}/> Mới nhất
+                         </button>
+                         <button 
+                            onClick={() => setSortBy('trending')} 
+                            className={`flex items-center gap-2 px-4 py-2 rounded-xl text-[10px] font-bold uppercase tracking-widest transition-all ${sortBy === 'trending' ? 'bg-white text-orange-600 shadow-sm' : 'text-slate-400 hover:text-slate-600'}`}
+                         >
+                            <TrendingUp size={14}/> Thịnh hành
+                         </button>
+                      </div>
+                    )}
                   </div>
 
                   <div className="space-y-6">
@@ -866,7 +885,6 @@ const AdminAILab: React.FC<{ user: FirebaseUser }> = ({ user }) => {
       </div>
 
       <div className="space-y-10">
-        {/* BƯỚC 1: QUẢN LÝ CHỦ ĐỀ */}
         <div className="space-y-4">
           <div className="flex items-center justify-between mb-2">
             <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest">
@@ -904,7 +922,6 @@ const AdminAILab: React.FC<{ user: FirebaseUser }> = ({ user }) => {
           </div>
         </div>
 
-        {/* BƯỚC 2: NHẬP Ý TƯỞNG */}
         <div className="space-y-3">
           <div className="flex items-center gap-2 text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1">
             <Edit3 size={14}/>
