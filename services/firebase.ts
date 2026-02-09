@@ -2,8 +2,6 @@
 import { initializeApp } from "firebase/app";
 import { 
   getAuth, 
-  GoogleAuthProvider, 
-  signInWithPopup, 
   signOut,
   onAuthStateChanged,
   createUserWithEmailAndPassword,
@@ -45,25 +43,6 @@ const firebaseConfig = {
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
-const googleProvider = new GoogleAuthProvider();
-
-export const loginWithGoogle = async () => {
-  const result = await signInWithPopup(auth, googleProvider);
-  const user = result.user;
-  const userRef = doc(db, 'users', user.uid);
-  const userSnap = await getDoc(userRef);
-  
-  if (!userSnap.exists()) {
-    await setDoc(userRef, {
-      displayName: user.displayName,
-      photoURL: user.photoURL,
-      points: 0,
-      email: user.email,
-      createdAt: serverTimestamp()
-    });
-  }
-  return user;
-};
 
 export const loginWithEmail = (email: string, pass: string) => 
   signInWithEmailAndPassword(auth, email, pass);

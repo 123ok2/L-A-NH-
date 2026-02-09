@@ -8,20 +8,20 @@ export interface AIResult {
   fakeComments: { authorName: string, content: string }[];
 }
 
-export const generateAIPost = async (topic: string): Promise<AIResult> => {
+const AI_DIRECTION = "Lửa Nhỏ - Cộng đồng chia sẻ mẹo vặt, cảm hứng học tập và kỹ năng sống cho giới trẻ Việt Nam. Giọng văn gần gũi, Gen Z, tích cực, không dạy đời.";
+
+export const generateAIPost = async (topic: string, category: string = "Chung"): Promise<AIResult> => {
   try {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
-      contents: `Hãy đóng vai một chuyên gia sáng tạo nội dung cho giới trẻ. Viết một bài đăng về chủ đề: "${topic}". 
+      contents: `Hãy đóng vai một chuyên gia sáng tạo nội dung cho ${AI_DIRECTION}. 
+      Viết một bài đăng cho chuyên mục "${category}" về chủ đề cụ thể: "${topic}". 
       
-      YÊU CẦU QUAN TRỌNG VỀ TÁC GIẢ:
-      - Tên tác giả (authorName) PHẢI là một tên người Việt Nam ngẫu nhiên, hiện đại (VD: Tùng Dương, Bảo Vy, Gia Bách, Linh Đan, Nhật Minh...). 
-      - ĐẢM BẢO TÊN KHÔNG BỊ TRÙNG LẶP với các bài trước. 
-      - Giọng văn: Gần gũi, Gen Z, tích cực, không dạy đời.
-      
-      YÊU CẦU VỀ BÌNH LUẬN:
-      - Tạo 3 bình luận seeding từ các tài khoản khác nhau (tên cũng phải ngẫu nhiên).
+      YÊU CẦU QUAN TRỌNG:
+      - Tên tác giả (authorName) là một tên người Việt Nam ngẫu nhiên, hiện đại (VD: Minh Anh, Hoàng Nam, Linh Chi...).
+      - Nội dung bài viết phải mang tính chia sẻ, hữu ích, có tâm.
+      - Các bình luận seeding (fakeComments) phải thể hiện sự tương tác tích cực, đặt câu hỏi hoặc cảm ơn theo đúng văn hóa mạng xã hội giới trẻ.
       
       Yêu cầu trả về định dạng JSON chính xác:
       {
@@ -62,12 +62,32 @@ export const generateAIPost = async (topic: string): Promise<AIResult> => {
     return JSON.parse(response.text);
   } catch (error) {
     console.error("AI Post Error:", error);
-    const randomNames = ["Hoàng Nam", "Thùy Chi", "Minh Đức", "Khánh Linh", "Tuấn Kiệt", "Phương Anh"];
-    return { 
-      title: "Cảm hứng ngày mới", 
-      content: "Hãy bắt đầu ngày mới thật năng lượng nhé!", 
-      authorName: randomNames[Math.floor(Math.random() * randomNames.length)],
-      fakeComments: []
-    };
+    return { title: "", content: "", authorName: "", fakeComments: [] };
+  }
+};
+
+export const suggestAITitle = async (category: string): Promise<string> => {
+  try {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: `Gợi ý 1 tiêu đề bài viết ngắn gọn, cực cuốn cho chủ đề "${category}" trong cộng đồng ${AI_DIRECTION}. Chỉ trả về duy nhất chuỗi tiêu đề, không thêm gì khác.`,
+    });
+    return response.text.trim().replace(/['"]/g, '');
+  } catch (e) {
+    return "Mẹo nhỏ cho ngày mới";
+  }
+};
+
+export const refineAIContent = async (currentContent: string): Promise<string> => {
+  try {
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: `Hãy giúp tôi tinh chỉnh đoạn văn sau theo phong cách ${AI_DIRECTION}. Hãy làm nó cuốn hút hơn, thêm emoji phù hợp và sửa lỗi diễn đạt: "${currentContent}". Chỉ trả về nội dung đã sửa.`,
+    });
+    return response.text.trim();
+  } catch (e) {
+    return currentContent;
   }
 };
